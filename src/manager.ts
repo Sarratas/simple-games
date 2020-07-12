@@ -1,5 +1,5 @@
-import Game from "./game.js";
-import SnakeGame from "./games/snake.js";
+import Game from "./games/game.js";
+import SnakeGame from "./games/snake/snake-game.js";
 
 const enum GameType {
     Snake = 'snake',
@@ -48,7 +48,8 @@ class Manager {
     startGame(gameType: GameType): void {
         switch (gameType) {
             case GameType.Snake:
-                this.currentGame = new SnakeGame();
+                this.currentGame = new SnakeGame(this.canvas);
+                this.currentGame.start();
                 break;
             default:
                 break;
