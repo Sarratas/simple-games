@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Simple games</title>
+    <meta name="description" content="Simple games">
+    <meta name="author" content="Sarratas">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <script src="../dist/index.js" type="module"></script>
+
+    <div class="buttons-wrapper" id="buttons-wrapper">
+        <h2>Select your game</h2>
+        <button class="btn btn-lg btn-primary" id="snake">Snake</button>
+    </div>
+    <div class="canvas-wrapper" id="canvas-wrapper" style="display: none">
+        <canvas id="canvas" width="600px" height="600px"></canvas>
+        <button class="btn btn-lg btn-danger mt-3" id="back-button">Back</button>
+    </div>
+</body>
+
+</html>
