@@ -1,4 +1,5 @@
 import { Pos2D, ArrowKey, SEGMENT_SIZE } from "./declarations.js";
+import Food from "./food.js";
 
 export default class Snake {
     private get head(): Pos2D {
@@ -86,7 +87,18 @@ export default class Snake {
         this.handleBoundary();
     }
 
-    eat(): void {
-        this.length += 1;
+    render(ctx: CanvasRenderingContext2D): void {
+        const offset = SEGMENT_SIZE / 2;
+        const [head, ...segments] = this.segments;
+        for (const segment of segments) {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(segment.x - offset + 1, segment.y - offset + 1, SEGMENT_SIZE - 2, SEGMENT_SIZE - 2);
+        }
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(head.x - offset, head.y - offset, SEGMENT_SIZE, SEGMENT_SIZE);
+    }
+
+    eat(food: Food): void {
+        this.length += food.value;
     }
 }

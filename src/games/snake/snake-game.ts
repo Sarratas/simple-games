@@ -1,6 +1,8 @@
 import Game from "../game.js";
 import Snake from "./snake.js";
-import { ArrowKey, FRAMES_PER_SECOND, SEGMENT_SIZE, Pos2D } from "./declarations.js";
+import Food from "./food.js";
+import { ArrowKey, FRAMES_PER_SECOND, SEGMENT_SIZE, Pos2D, MAX_FOOD_COUNT, FOOD_SPAWN_TIMER } from "./declarations.js";
+import { randomInt, randomIntWithDivisor } from "./utils.js";
 
 export default class SnakeGame implements Game {
     readonly canvas: HTMLCanvasElement;
@@ -10,6 +12,9 @@ export default class SnakeGame implements Game {
     readonly relevantKeys: ArrowKey[] = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
     snake: Snake;
+
+    foodList: Food[];
+    foodSpawnTimer: number;
 
     gameInterval: number;
     currentKey: ArrowKey;
@@ -25,10 +30,12 @@ export default class SnakeGame implements Game {
         this.snake = new Snake(snakePos, this.canvasSize);
 
         this.gameInterval = setInterval(() => this.update(), 1000 / FRAMES_PER_SECOND);
-        setInterval(() => this.snake.eat(), 100);
 
         this.currentKey = 'ArrowRight';
         this.newKey = 'ArrowRight';
+
+        this.foodList = [];
+        this.foodSpawnTimer = 0;
     }
 
     stop(): void {
@@ -63,23 +70,46 @@ export default class SnakeGame implements Game {
     }
 
     private update() {
-        this.currentKey = this.newKey;
-        this.snake.update(this.currentKey);
+        this.updateSnake();
+        this.updateFood();
         this.render();
         this.detectCollisions();
     }
 
+    private updateSnake() {
+        this.currentKey = this.newKey;
+        this.snake.update(this.currentKey);
+    }
+
+    private updateFood() {
+        this.spawnFood();
+        this.foodList.forEach(food => food.update());
+    }
+
+    private spawnFood() {
+        if (this.foodList.length >= MAX_FOOD_COUNT || this.foodSpawnTimer++ < FOOD_SPAWN_TIMER) return;
+
+        this.foodSpawnTimer = 0;
+        this.spawnFoodUnit();
+    }
+
+    private spawnFoodUnit() {
+        const offset = SEGMENT_SIZE / 2;
+
+        const x = randomIntWithDivisor(0, this.canvasSize.x, SEGMENT_SIZE) + offset;
+        const y = randomIntWithDivisor(0, this.canvasSize.y, SEGMENT_SIZE) + offset;
+        const value = randomInt(1, 9);
+
+        this.foodList.push(new Food({ x, y }, value));
+    }
+
     private render() {
         this.ctx.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
+        this.ctx.fillStyle = '#d4efdf';
+        this.ctx.fillRect(0, 0, this.canvasSize.x, this.canvasSize.y);
         
-        const offset = SEGMENT_SIZE / 2;
-        const [head, ...segments] = this.snake.getSegments();
-        for (const segment of segments) {
-            this.ctx.fillStyle = '#000';
-            this.ctx.fillRect(segment.x - offset, segment.y - offset, SEGMENT_SIZE, SEGMENT_SIZE);
-        }
-        this.ctx.fillStyle = 'blue';
-        this.ctx.fillRect(head.x - offset, head.y - offset, SEGMENT_SIZE, SEGMENT_SIZE);
+        this.foodList.forEach(food => food.render(this.ctx));
+        this.snake.render(this.ctx);
     }
 
     private detectCollisions() {
@@ -89,6 +119,12 @@ export default class SnakeGame implements Game {
             if (head.x === segment.x && head.y === segment.y) {
                 this.stop();
             }
+        }
+
+        const foodToEat = this.foodList.find(food => food.position.x === head.x && food.position.y === head.y);
+        if (foodToEat) {
+            this.snake.eat(foodToEat);
+            this.foodList = this.foodList.filter(food => food != foodToEat);
         }
     }
 }
