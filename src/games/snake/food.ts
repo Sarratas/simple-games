@@ -16,7 +16,6 @@ const colorsTable = [
 
 export default class Food {
     readonly position: Pos2D; 
-    readonly special: boolean;
 
     value: number;
 

@@ -12,7 +12,7 @@ class Manager {
     private readonly canvas: HTMLCanvasElement;
     private readonly ctx: CanvasRenderingContext2D;
 
-    private currentGame: Game;
+    private currentGame: Game | undefined;
 
     constructor(canvas: HTMLCanvasElement, canvasWrapper: HTMLDivElement, buttonsWrapper: HTMLDivElement, backButton: HTMLButtonElement) {
         this.canvasWrapper = canvasWrapper;
@@ -20,7 +20,7 @@ class Manager {
         this.backButton = backButton;
 
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.setEventListeners();
     }
@@ -41,7 +41,9 @@ class Manager {
     }
 
     handleBackButtonClick(): void {
-        this.currentGame.stop();
+        if (this.currentGame) {
+            this.currentGame.exit();
+        }
         this.showMenu();
     }
 

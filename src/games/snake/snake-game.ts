@@ -1,7 +1,7 @@
 import Game from "../game.js";
 import Snake from "./snake.js";
 import Food from "./food.js";
-import { ArrowKey, FRAMES_PER_SECOND, SEGMENT_SIZE, Pos2D, MAX_FOOD_COUNT, FOOD_SPAWN_TIMER } from "./declarations.js";
+import { ArrowKey, FRAMES_PER_SECOND, SEGMENT_SIZE, Pos2D, MAX_FOOD_COUNT, FOOD_SPAWN_TIMER, MAX_SPAWN_RETRY_COUNT } from "./declarations.js";
 import { randomInt, randomIntWithDivisor } from "./utils.js";
 
 export default class SnakeGame implements Game {
@@ -22,7 +22,7 @@ export default class SnakeGame implements Game {
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.canvasSize = { x: canvas.width, y: canvas.height };
 
@@ -40,12 +40,15 @@ export default class SnakeGame implements Game {
 
     stop(): void {
         clearInterval(this.gameInterval);
-        //this.ctx.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
         window.removeEventListener('keydown', this.handleKeyDown);
     }
 
     start(): void {
         this.bindEventListeners();
+    }
+
+    exit(): void {
+        this.ctx.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
     }
 
     private bindEventListeners() {
@@ -94,13 +97,34 @@ export default class SnakeGame implements Game {
     }
 
     private spawnFoodUnit() {
-        const offset = SEGMENT_SIZE / 2;
-
-        const x = randomIntWithDivisor(0, this.canvasSize.x, SEGMENT_SIZE) + offset;
-        const y = randomIntWithDivisor(0, this.canvasSize.y, SEGMENT_SIZE) + offset;
         const value = randomInt(1, 9);
+        const pos = this.getRandomPos();
 
-        this.foodList.push(new Food({ x, y }, value));
+        if (pos) {
+            this.foodList.push(new Food(pos, value));
+        }
+    }
+
+    private getRandomPos(): Pos2D | undefined {
+        let retryCount = MAX_SPAWN_RETRY_COUNT;
+
+        while (retryCount--) {
+            const offset = SEGMENT_SIZE / 2;
+
+            const x = randomIntWithDivisor(0, this.canvasSize.x, SEGMENT_SIZE) + offset;
+            const y = randomIntWithDivisor(0, this.canvasSize.y, SEGMENT_SIZE) + offset;
+            const pos: Pos2D = { x, y };
+
+            if (!this.isPosOccupied(pos)) {
+                return pos;
+            }
+        }
+        return undefined;
+    }
+
+    private isPosOccupied(pos: Pos2D): boolean {
+        return !!this.snake.getSegments().find(segment => segment.x === pos.x && segment.y === pos.y) ||
+            !!this.foodList.find(food => food.position.x === pos.x && food.position.y === pos.y);
     }
 
     private render() {

@@ -7,5 +7,6 @@ export const SEGMENT_SIZE = 20;
 export const FRAMES_PER_SECOND = 15;
 export const MAX_FOOD_COUNT = 20;
 export const FOOD_SPAWN_TIMER = 1 * FRAMES_PER_SECOND;
+export const MAX_SPAWN_RETRY_COUNT = 5;
 
 export type ArrowKey = 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight';
