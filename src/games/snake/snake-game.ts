@@ -43,6 +43,7 @@ export default class SnakeGame implements Game {
     stop(): void {
         clearInterval(this.gameInterval);
         window.removeEventListener('keydown', this.handleKeyDown);
+        this.showScore();
     }
 
     start(): void {
@@ -136,6 +137,26 @@ export default class SnakeGame implements Game {
         
         this.foodList.forEach(food => food.render(this.ctx));
         this.snake.render(this.ctx);
+    }
+
+    private showScore() {
+        const score = this.snake.getSegments().length;
+        const text = 'Your score:';
+        const boxWidth = 200;
+        const boxHeight = 100;
+
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillRect(this.canvasSize.x / 2 - boxWidth / 2 - 2, this.canvasSize.y / 2 - boxHeight / 2 - 2, boxWidth + 4, boxHeight + 4);
+        this.ctx.globalAlpha = 0.5;
+        this.ctx.fillRect(this.canvasSize.x / 2 - boxWidth / 2, this.canvasSize.y / 2 - boxHeight / 2, boxWidth, boxHeight);
+        this.ctx.globalAlpha = 1.0;
+
+        this.ctx.fillStyle = 'black';
+        this.ctx.font = "bold 30px Arial";
+        const textBounds = this.ctx.measureText(text);
+        this.ctx.fillText(text, this.canvasSize.x / 2 - textBounds.width / 2, this.canvasSize.y / 2 - 5);
+        const scoreBounds = this.ctx.measureText(score.toString());
+        this.ctx.fillText(score.toString(), this.canvasSize.x / 2 - scoreBounds.width / 2, this.canvasSize.y / 2 + 25);
     }
 
     private detectCollisions() {
