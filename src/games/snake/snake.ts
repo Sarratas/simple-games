@@ -1,4 +1,4 @@
-import { Pos2D, ArrowKey, SEGMENT_SIZE } from "./declarations.js";
+import { Pos2D, ArrowKey, Config, Colors } from "./declarations.js";
 import Food from "./food.js";
 
 export default class Snake {
@@ -17,32 +17,32 @@ export default class Snake {
     constructor(initialPosition: Pos2D, boundary: Pos2D) {
         this.segments = [initialPosition, initialPosition, initialPosition ];
         this.boundary = boundary;
-        this.length = 10;
+        this.length = Config.SnakeInitialLength;
     }
 
     moveLeft(): void {
-        const newPos = { x: this.head.x - SEGMENT_SIZE, y: this.head.y };
+        const newPos = { x: this.head.x - Config.SegmentSize, y: this.head.y };
         this.moveTo(newPos);
     }
 
     moveRight(): void {
-        const newPos = { x: this.head.x + SEGMENT_SIZE, y: this.head.y };
+        const newPos = { x: this.head.x + Config.SegmentSize, y: this.head.y };
         this.moveTo(newPos);
     }
 
     moveUp(): void {
-        const newPos = { x: this.head.x, y: this.head.y - SEGMENT_SIZE };
+        const newPos = { x: this.head.x, y: this.head.y - Config.SegmentSize };
         this.moveTo(newPos);
     }
 
     moveDown(): void {
-        const newPos = { x: this.head.x, y: this.head.y + SEGMENT_SIZE };
+        const newPos = { x: this.head.x, y: this.head.y + Config.SegmentSize };
         this.moveTo(newPos);
     }
 
     handleBoundary(): void {
         const head = this.head;
-        const offset = SEGMENT_SIZE / 2;
+        const offset = Config.SegmentSize / 2;
         if (head.x > this.boundary.x - offset) {
             head.x = offset;
         }
@@ -88,14 +88,18 @@ export default class Snake {
     }
 
     render(ctx: CanvasRenderingContext2D): void {
-        const offset = SEGMENT_SIZE / 2;
+        const offset = Config.SegmentSize / 2;
+        const segmentPadding = 1;
         const [head, ...segments] = this.segments;
         for (const segment of segments) {
-            ctx.fillStyle = 'black';
-            ctx.fillRect(segment.x - offset + 1, segment.y - offset + 1, SEGMENT_SIZE - 2, SEGMENT_SIZE - 2);
+            ctx.fillStyle = Colors.SnakeSegment;
+            const posX = segment.x - offset + segmentPadding;
+            const posY = segment.y - offset + segmentPadding;
+            const segmentRenderSize = Config.SegmentSize - segmentPadding * 2;
+            ctx.fillRect(posX, posY, segmentRenderSize, segmentRenderSize);
         }
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(head.x - offset, head.y - offset, SEGMENT_SIZE, SEGMENT_SIZE);
+        ctx.fillStyle = Colors.SnakeHead;
+        ctx.fillRect(head.x - offset, head.y - offset, Config.SegmentSize, Config.SegmentSize);
     }
 
     eat(food: Food): void {

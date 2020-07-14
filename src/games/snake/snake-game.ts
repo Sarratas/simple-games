@@ -1,7 +1,7 @@
 import Game from "../game.js";
 import Snake from "./snake.js";
 import Food from "./food.js";
-import { ArrowKey, FRAMES_PER_SECOND, SEGMENT_SIZE, Pos2D, MAX_FOOD_COUNT, FOOD_SPAWN_TIMER, MAX_SPAWN_RETRY_COUNT } from "./declarations.js";
+import { ArrowKey, Pos2D, Colors, Config } from "./declarations.js";
 import { randomInt, randomIntWithDivisor } from "./utils.js";
 
 export default class SnakeGame implements Game {
@@ -26,10 +26,12 @@ export default class SnakeGame implements Game {
 
         this.canvasSize = { x: canvas.width, y: canvas.height };
 
-        const snakePos = { x: canvas.width / 2 - SEGMENT_SIZE / 2, y: canvas.width / 2 - SEGMENT_SIZE / 2 };
+        const initialX = canvas.width / 2 - Config.SegmentSize / 2;
+        const initialY = canvas.width / 2 - Config.SegmentSize / 2;
+        const snakePos = { x: initialX, y: initialY };
         this.snake = new Snake(snakePos, this.canvasSize);
 
-        this.gameInterval = setInterval(() => this.update(), 1000 / FRAMES_PER_SECOND);
+        this.gameInterval = setInterval(() => this.update(), 1000 / Config.FramesPerSecond);
 
         this.currentKey = 'ArrowRight';
         this.newKey = 'ArrowRight';
@@ -90,14 +92,14 @@ export default class SnakeGame implements Game {
     }
 
     private spawnFood() {
-        if (this.foodList.length >= MAX_FOOD_COUNT || this.foodSpawnTimer++ < FOOD_SPAWN_TIMER) return;
+        if (this.foodList.length >= Config.MaxFoodCount || this.foodSpawnTimer++ < Config.FoodSpawnTimer) return;
 
         this.foodSpawnTimer = 0;
         this.spawnFoodUnit();
     }
 
     private spawnFoodUnit() {
-        const value = randomInt(1, 9);
+        const value = randomInt(Config.FoodMinValue, Config.FoodMaxValue);
         const pos = this.getRandomPos();
 
         if (pos) {
@@ -106,13 +108,13 @@ export default class SnakeGame implements Game {
     }
 
     private getRandomPos(): Pos2D | undefined {
-        let retryCount = MAX_SPAWN_RETRY_COUNT;
+        let retryCount = Config.MaxSpawnRetryCount;
 
         while (retryCount--) {
-            const offset = SEGMENT_SIZE / 2;
+            const offset = Config.SegmentSize / 2;
 
-            const x = randomIntWithDivisor(0, this.canvasSize.x, SEGMENT_SIZE) + offset;
-            const y = randomIntWithDivisor(0, this.canvasSize.y, SEGMENT_SIZE) + offset;
+            const x = randomIntWithDivisor(0, this.canvasSize.x, Config.SegmentSize) + offset;
+            const y = randomIntWithDivisor(0, this.canvasSize.y, Config.SegmentSize) + offset;
             const pos: Pos2D = { x, y };
 
             if (!this.isPosOccupied(pos)) {
@@ -129,7 +131,7 @@ export default class SnakeGame implements Game {
 
     private render() {
         this.ctx.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
-        this.ctx.fillStyle = '#d4efdf';
+        this.ctx.fillStyle = Colors.CanvasBackground;
         this.ctx.fillRect(0, 0, this.canvasSize.x, this.canvasSize.y);
         
         this.foodList.forEach(food => food.render(this.ctx));

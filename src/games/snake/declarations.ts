@@ -3,10 +3,25 @@ export type Pos2D = {
     y: number,
 }
 
-export const SEGMENT_SIZE = 20;
-export const FRAMES_PER_SECOND = 15;
-export const MAX_FOOD_COUNT = 20;
-export const FOOD_SPAWN_TIMER = 1 * FRAMES_PER_SECOND;
-export const MAX_SPAWN_RETRY_COUNT = 5;
+export const enum Config {
+    SegmentSize = 20,
+    FramesPerSecond = 15,
+    SnakeInitialLength = 10,
+
+    MaxFoodCount = 20,
+    FoodSpawnTimer = 1 * FramesPerSecond,
+    FoodMinValue = 1,
+    FoodMaxValue = 9,
+    SpecialFoodChance = 10,
+    SpecialFoodMultiplier = 10,
+    FoodFadeLimit = 10,
+    MaxSpawnRetryCount = 5,
+}
 
 export type ArrowKey = 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight';
+
+export const enum Colors {
+    CanvasBackground = '#d4efdf',
+    SnakeSegment = 'black',
+    SnakeHead = 'blue',
+}
