@@ -4,6 +4,11 @@ import Food from "./food.js";
 import { ArrowKey, Pos2D, Colors, Config } from "./declarations.js";
 import { randomInt, randomIntWithDivisor } from "./utils.js";
 
+const enum SoundID {
+    Eat,
+    Lose
+}
+
 export default class SnakeGame implements Game {
     readonly canvas: HTMLCanvasElement;
     readonly ctx: CanvasRenderingContext2D;
@@ -19,6 +24,8 @@ export default class SnakeGame implements Game {
     gameInterval: number;
     currentKey: ArrowKey;
     newKey: ArrowKey;
+
+    sounds: { [key in SoundID]: HTMLAudioElement };
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -38,6 +45,11 @@ export default class SnakeGame implements Game {
 
         this.foodList = [];
         this.foodSpawnTimer = 0;
+
+        this.sounds = {
+            [SoundID.Eat]: new Audio('../../../assets/snap.ogg'),
+            [SoundID.Lose]: new Audio('../../../assets/lose.wav'),
+        };
     }
 
     stop(): void {
@@ -147,7 +159,8 @@ export default class SnakeGame implements Game {
 
         this.ctx.fillStyle = 'red';
         this.ctx.fillRect(this.canvasSize.x / 2 - boxWidth / 2 - 2, this.canvasSize.y / 2 - boxHeight / 2 - 2, boxWidth + 4, boxHeight + 4);
-        this.ctx.globalAlpha = 0.5;
+        this.ctx.fillStyle = 'white';
+        this.ctx.globalAlpha = 0.7;
         this.ctx.fillRect(this.canvasSize.x / 2 - boxWidth / 2, this.canvasSize.y / 2 - boxHeight / 2, boxWidth, boxHeight);
         this.ctx.globalAlpha = 1.0;
 
@@ -164,6 +177,7 @@ export default class SnakeGame implements Game {
 
         for (const segment of segments) {
             if (head.x === segment.x && head.y === segment.y) {
+                this.playSound(SoundID.Lose);
                 this.stop();
             }
         }
@@ -171,7 +185,13 @@ export default class SnakeGame implements Game {
         const foodToEat = this.foodList.find(food => food.position.x === head.x && food.position.y === head.y);
         if (foodToEat) {
             this.snake.eat(foodToEat);
+            this.playSound(SoundID.Eat);
             this.foodList = this.foodList.filter(food => food !== foodToEat);
         }
+    }
+
+    private playSound(sound: SoundID) {
+        this.sounds[sound].currentTime = 0;
+        this.sounds[sound].play();
     }
 }
