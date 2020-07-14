@@ -150,7 +150,7 @@ export default class SnakeGame implements Game {
         const foodToEat = this.foodList.find(food => food.position.x === head.x && food.position.y === head.y);
         if (foodToEat) {
             this.snake.eat(foodToEat);
-            this.foodList = this.foodList.filter(food => food != foodToEat);
+            this.foodList = this.foodList.filter(food => food !== foodToEat);
         }
     }
 }
