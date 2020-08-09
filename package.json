@@ -1,0 +1,29 @@
+{
+  "name": "simple-games",
+  "version": "0.2.0",
+  "description": "Simple typescript, object oriented and standalone implementations of popular 2d games",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "eslint": "^7.6.0",
+    "http-server": "^0.12.3",
+    "typescript": "^3.9.6"
+  },
+  "scripts": {
+    "start": "http-server",
+    "compile": "tsc",
+    "lint": "eslint src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sarratas/simple-games.git"
+  },
+  "author": "Sarratas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sarratas/simple-games/issues"
+  },
+  "homepage": "https://github.com/Sarratas/simple-games#readme"
+}
