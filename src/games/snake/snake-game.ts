@@ -47,8 +47,8 @@ export default class SnakeGame implements Game {
         this.foodSpawnTimer = 0;
 
         this.sounds = {
-            [SoundID.Eat]: new Audio('../../assets/snap.ogg'),
-            [SoundID.Lose]: new Audio('../../assets/lose.wav'),
+            [SoundID.Eat]: new Audio('assets/snap.ogg'),
+            [SoundID.Lose]: new Audio('assets/lose.wav'),
         };
     }
 
