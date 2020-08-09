@@ -1,8 +1,10 @@
 import Game from "./games/game.js";
 import SnakeGame from "./games/snake/snake-game.js";
+import PongGame from "./games/pong/pong-game.js";
 
 const enum GameType {
     Snake = 'snake',
+    Pong = 'pong',
 }
 
 class Manager {
@@ -42,6 +44,7 @@ class Manager {
 
     handleBackButtonClick(): void {
         if (this.currentGame) {
+            this.currentGame.stop();
             this.currentGame.exit();
         }
         this.showMenu();
@@ -51,11 +54,14 @@ class Manager {
         switch (gameType) {
             case GameType.Snake:
                 this.currentGame = new SnakeGame(this.canvas);
-                this.currentGame.start();
+                break;
+            case GameType.Pong:
+                this.currentGame = new PongGame(this.canvas);
                 break;
             default:
                 break;
         }
+        this.currentGame?.start();
         this.hideMenu();
     }
 
